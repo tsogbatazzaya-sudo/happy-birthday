@@ -5,81 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Төрсөн өдрийн мэнд!</title>
     <style>
+        :root {
+            --primary: #ff758c;
+            --secondary: #ff7eb3;
+        }
         body {
-            margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
-            height: 100vh; background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
-            font-family: 'Arial', sans-serif; overflow: hidden; text-align: center;
+            margin: 0; padding: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
         }
-        .card {
-            background: rgba(255, 255, 255, 0.9); padding: 40px; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 10; max-width: 400px; width: 80%;
-        }
-        /* Эхлээд текстүүд нуугдмал байна */
-        h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 10px; display: none; }
-        p { color: #555; font-size: 1.1rem; line-height: 1.5; display: none; }
-        
-        .btn {
-            background: #ff6b6b; color: white; border: none; padding: 15px 30px;
-            font-size: 1.2rem; border-radius: 50px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4); transition: 0.3s;
-        }
-        .btn:hover { transform: scale(1.05); }
 
-        /* Зүрхний загвар */
-        .heart {
-            position: absolute; background-color: #ff6b6b; display: inline-block;
-            height: 30px; width: 30px; margin: 0 10px; top: -50px;
-            transform: rotate(-45deg); animation: fall linear infinite; z-index: 1;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .heart:before, .heart:after {
-            content: ""; background-color: #ff6b6b; border-radius: 50%;
-            height: 30px; width: 30px; position: absolute;
+
+        .container {
+            position: relative; z-index: 10;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 50px 30px;
+            border-radius: 30px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 450px; width: 85%;
+            color: white;
+            transition: 0.5s;
         }
-        .heart:before { top: -15px; left: 0; }
-        .heart:after { left: 15px; top: 0; }
+
+        h1 { font-size: 2.5rem; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); margin-bottom: 20px; display: none; }
+        p { font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; display: none; }
+
+        .main-btn {
+            background: white; color: #e73c7e;
+            border: none; padding: 18px 40px;
+            font-size: 1.3rem; font-weight: bold;
+            border-radius: 50px; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .main-btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 25px rgba(0,0,0,0.2); }
+
+        /* Унах эффектүүд */
+        .element {
+            position: absolute; top: -50px;
+            pointer-events: none; animation: fall linear infinite;
+        }
 
         @keyframes fall {
-            to { transform: translateY(105vh) rotate(-45deg); }
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        /* Чимэглэлийн хөвдөг дүрсүүд */
+        .floating-emoji {
+            position: absolute; font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.8;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
     </style>
 </head>
 <body>
 
-    <audio id="birthdaySong">
+    <audio id="music" loop>
         <source src="duu.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="card">
-        <button class="btn" id="startBtn" onclick="startCelebration()">Мэндчилгээг нээх 🎁</button>
+    <div class="container" id="card">
+        <div id="start-content">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🎁</div>
+            <button class="main-btn" onclick="celebrate()">Энд дарж гэнэтийн бэлгээ нээгээрэй!</button>
+        </div>
 
-        <h1 id="title">Хөөрхөн дүүдээ төрсөн өдрийн мэнд! 🎂</h1>
-        <p id="message">Энэ дэлхийн хамгийн шилдэг дүүдээ эрүүл энх, аз жаргал, инээд хөөр бүхнийг хүсэн ерөөе. Үргэлж гэрэлтүүлж яваарай! ✨</p>
+        <div id="main-content">
+            <h1 id="title">Happy Birthday! 🎂</h1>
+            <p id="text">Хайрт дүүдээ төрсөн өдрийн баярын мэнд хүргэе! ✨ <br><br>
+            Чи минь энэ дэлхийн хамгийн хөөрхөн, ухаалаг дүү шүү. Сурлагад нь өндөр амжилт хүсье. Мөрөөдөл бүхэн нь биелэг!</p>
+            <div style="font-size: 3rem;">💖🌸🍭</div>
+        </div>
     </div>
 
     <script>
-        function startCelebration() {
-            // 1. Дууг тоглуулж эхлэх
-            document.getElementById("birthdaySong").play();
-            
-            // 2. Товчийг алга болгох
-            document.getElementById("startBtn").style.display = "none";
-            
-            // 3. Мэндчилгээний үгсийг гаргаж ирэх
-            document.getElementById("title").style.display = "block";
-            document.getElementById("message").style.display = "block";
-            
-            // 4. Дээрээс зүрхнүүд нисгэх
-            setInterval(createHeart, 300);
+        document.getElementById('main-content').style.display = 'none';
+
+        function celebrate() {
+            // Дуу тоглуулах
+            const audio = document.getElementById('music');
+            audio.play().catch(e => console.log("Дуу тоглуулахад алдаа гарлаа"));
+
+            // Контент солих
+            document.getElementById('start-content').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('title').style.display = 'block';
+            document.getElementById('text').style.display = 'block';
+
+            // Эффектүүд эхлүүлэх
+            setInterval(createHeart, 200);
+            setInterval(createStar, 400);
+            setInterval(createEmoji, 1000);
         }
 
         function createHeart() {
             const heart = document.createElement('div');
-            heart.classList.add('heart');
-            heart.style.left = Math.random() * 100 + "vw";
-            heart.style.animationDuration = Math.random() * 3 + 2 + "s";
-            heart.style.opacity = Math.random();
+            heart.innerHTML = '❤️';
+            heart.className = 'element';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
             document.body.appendChild(heart);
-            setTimeout(() => { heart.remove(); }, 5000);
+            setTimeout(() => heart.remove(), 5000);
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.innerHTML = '✨';
+            star.className = 'element';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.fontSize = Math.random() * 15 + 10 + 'px';
+            star.style.animationDuration = Math.random() * 2 + 3 + 's';
+            star.style.color = '#fff';
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 5000);
+        }
+
+        function createEmoji() {
+            const emojis = ['🌸', '🎈', '🎁', '🎂', '🍭', '🎀'];
+            const emoji = document.createElement('div');
+            emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.className = 'element';
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.fontSize = '25px';
+            emoji.style.animationDuration = Math.random() * 4 + 4 + 's';
+            document.body.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 6000);
         }
     </script>
 </body>
