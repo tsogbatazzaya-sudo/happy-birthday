@@ -3,76 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Төрсөн өдрийн мэнд!</title>
+    <title>Төрсөн өдрийн мэнд, Азжаргал!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --primary: #ff758c;
-            --secondary: #ff7eb3;
+            --bg: #fff0f3;
+            --primary: #ff4d6d;
+            --secondary: #ff758f;
+            --glass: rgba(255, 255, 255, 0.7);
         }
+        * { box-sizing: border-box; transition: 0.3s; }
         body {
-            margin: 0; padding: 0; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            overflow: hidden;
+            margin: 0; font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Цэс (Navigation) */
+        nav {
+            background: var(--glass); backdrop-filter: blur(10px);
+            padding: 15px; display: flex; justify-content: center; gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100;
         }
-
-        .container {
-            position: relative; z-index: 10;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 50px 30px;
-            border-radius: 30px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
-            text-align: center;
-            max-width: 450px; width: 85%;
-            color: white;
-            transition: 0.5s;
+        nav button {
+            background: transparent; border: 2px solid var(--primary);
+            color: var(--primary); padding: 8px 15px; border-radius: 20px;
+            cursor: pointer; font-weight: bold;
         }
+        nav button.active { background: var(--primary); color: white; }
 
-        h1 { font-size: 2.5rem; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); margin-bottom: 20px; display: none; }
-        p { font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; display: none; }
-
-        .main-btn {
-            background: white; color: #e73c7e;
-            border: none; padding: 18px 40px;
-            font-size: 1.3rem; font-weight: bold;
-            border-radius: 50px; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            transition: 0.3s;
+        /* Үндсэн агуулга */
+        .content-container {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            padding: 20px; position: relative;
         }
-        .main-btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 25px rgba(0,0,0,0.2); }
-
-        /* Унах эффектүүд */
-        .element {
-            position: absolute; top: -50px;
-            pointer-events: none; animation: fall linear infinite;
+        .page {
+            background: var(--glass); backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 30px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%; max-width: 500px; display: none;
+            animation: fadeIn 0.5s ease;
         }
+        .page.active { display: block; }
 
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { color: var(--primary); font-size: 2.2rem; }
+        p { color: #444; line-height: 1.6; font-size: 1.1rem; }
+
+        /* Бялуу болон Эффект */
+        .cake { font-size: 5rem; cursor: pointer; display: inline-block; }
+        .cake:hover { transform: scale(1.1); }
+
+        .btn-play {
+            background: var(--primary); color: white; border: none;
+            padding: 15px 30px; border-radius: 50px; font-size: 1.2rem;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
         }
 
         /* Чимэглэлийн хөвдөг дүрсүүд */
-        .floating-emoji {
-            position: absolute; font-size: 2rem;
-            animation: float 3s ease-in-out infinite;
-            opacity: 0.8;
+        .decoration {
+            position: absolute; pointer-events: none; z-index: 1;
+            animation: float 6s infinite ease-in-out; opacity: 0.6;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
     </style>
 </head>
 <body>
@@ -81,73 +75,90 @@
         <source src="duu.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="container" id="card">
-        <div id="start-content">
-            <div style="font-size: 4rem; margin-bottom: 20px;">🎁</div>
-            <button class="main-btn" onclick="celebrate()">Энд дарж гэнэтийн бэлгээ нээгээрэй!</button>
+    <nav id="navbar" style="display: none;">
+        <button onclick="showPage('home')" id="btn-home" class="active">Нүүр</button>
+        <button onclick="showPage('wishes')">Surprise</button>
+        <button onclick="showPage('surprise')">Бэлэг</button>
+    </nav>
+
+    <div class="content-container">
+        <div id="start-page" class="page active">
+            <div style="font-size: 4rem;">🎁</div>
+            <h1>Азжаргалдаа зориулав</h1>
+            <p>Дүүдээ барих гэнэтийн бэлгийг нээх үү?</p>
+            <button class="btn-play" onclick="startApp()">Нээх ✨</button>
         </div>
 
-        <div id="main-content">
-            <h1 id="title">Happy Birthday! 🎂</h1>
-            <p id="text">Хайрт дүүдээ төрсөн өдрийн баярын мэнд хүргэе! ✨ <br><br>
-            Чи минь энэ дэлхийн хамгийн хөөрхөн, ухаалаг дүү шүү. Сурлагад нь өндөр амжилт хүсье. Мөрөөдөл бүхэн нь биелэг!</p>
-            <div style="font-size: 3rem;">💖🌸🍭</div>
+        <div id="home" class="page">
+            <h1>Happy Birthday, <br> Азжаргал! 🎂</h1>
+            <p>Өнөөдөр зөвхөн чиний өдөр. <br> Инээмсэглэлээр дүүрэн байгаарай!</p>
+            <div class="cake" onclick="launchConfetti()">🎂</div>
+            <p style="font-size: 0.8rem; color: #888;">(Бялуу дээр дарж салют буудуулаарай)</p>
+        </div>
+
+        <div id="wishes" class="page">
+            <h1>Хайрт дүүдээ 🌸</h1>
+            <p>Чи минь энэ дэлхийн хамгийн хөөрхөн, ухаалаг дүү шүү. Сурлагад нь өндөр амжилт хүсье. Мөрөөдөл бүхэн нь биелж, үргэлж гэрэлтэж яваарай!</p>
+            <p>Хайртай шүү! ❤️</p>
+        </div>
+
+        <div id="surprise" class="page">
+            <h1>Surprise! 🎉</h1>
+            <p>Азжаргал дүүдээ энэ өдрийн мэнд!</p>
+            <div style="font-size: 5rem;">✨🎈🎊</div>
+            <p>Жил бүрийн энэ өдөр хамгийн жаргалтай нь байгаарай.</p>
         </div>
     </div>
 
     <script>
-        document.getElementById('main-content').style.display = 'none';
-
-        function celebrate() {
+        function startApp() {
             // Дуу тоглуулах
             const audio = document.getElementById('music');
-            audio.play().catch(e => console.log("Дуу тоглуулахад алдаа гарлаа"));
+            audio.play().catch(err => console.log("Дууны алдаа"));
 
-            // Контент солих
-            document.getElementById('start-content').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            document.getElementById('title').style.display = 'block';
-            document.getElementById('text').style.display = 'block';
-
-            // Эффектүүд эхлүүлэх
-            setInterval(createHeart, 200);
-            setInterval(createStar, 400);
-            setInterval(createEmoji, 1000);
+            // Цэс гаргах
+            document.getElementById('navbar').style.display = 'flex';
+            
+            // Хуудас солих
+            showPage('home');
+            
+            // Салют буудуулах
+            launchConfetti();
         }
 
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.innerHTML = '❤️';
-            heart.className = 'element';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
-            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 5000);
+        function showPage(pageId) {
+            // Бүх хуудсыг нуух
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.classList.remove('active'));
+            
+            // Сонгосон хуудсыг харуулах
+            document.getElementById(pageId).classList.add('active');
+            
+            // Цэсний товчны өнгийг солих
+            const buttons = document.querySelectorAll('nav button');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
         }
 
-        function createStar() {
-            const star = document.createElement('div');
-            star.innerHTML = '✨';
-            star.className = 'element';
-            star.style.left = Math.random() * 100 + 'vw';
-            star.style.fontSize = Math.random() * 15 + 10 + 'px';
-            star.style.animationDuration = Math.random() * 2 + 3 + 's';
-            star.style.color = '#fff';
-            document.body.appendChild(star);
-            setTimeout(() => star.remove(), 5000);
+        function launchConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff4d6d', '#ff758f', '#ffffff', '#ffccd5']
+            });
         }
 
-        function createEmoji() {
-            const emojis = ['🌸', '🎈', '🎁', '🎂', '🍭', '🎀'];
-            const emoji = document.createElement('div');
-            emoji.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-            emoji.className = 'element';
-            emoji.style.left = Math.random() * 100 + 'vw';
-            emoji.style.fontSize = '25px';
-            emoji.style.animationDuration = Math.random() * 4 + 4 + 's';
-            document.body.appendChild(emoji);
-            setTimeout(() => emoji.remove(), 6000);
+        // Чимэглэлийн дүрсүүд нэмэх
+        for(let i=0; i<10; i++) {
+            let div = document.createElement('div');
+            div.className = 'decoration';
+            div.innerHTML = ['🌸', '✨', '💖', '🎈'][Math.floor(Math.random()*4)];
+            div.style.left = Math.random() * 100 + 'vw';
+            div.style.top = Math.random() * 100 + 'vh';
+            div.style.animationDelay = Math.random() * 5 + 's';
+            div.style.fontSize = Math.random() * 20 + 15 + 'px';
+            document.body.appendChild(div);
         }
     </script>
 </body>
