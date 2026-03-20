@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Төрсөн өдрийн мэнд!</title>
+    <style>
+        body {
+            margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
+            height: 100vh; background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            font-family: 'Arial', sans-serif; overflow: hidden; text-align: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.9); padding: 40px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 10; max-width: 400px; width: 80%;
+        }
+        /* Эхлээд текстүүд нуугдмал байна */
+        h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 10px; display: none; }
+        p { color: #555; font-size: 1.1rem; line-height: 1.5; display: none; }
+        
+        .btn {
+            background: #ff6b6b; color: white; border: none; padding: 15px 30px;
+            font-size: 1.2rem; border-radius: 50px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4); transition: 0.3s;
+        }
+        .btn:hover { transform: scale(1.05); }
+
+        /* Зүрхний загвар */
+        .heart {
+            position: absolute; background-color: #ff6b6b; display: inline-block;
+            height: 30px; width: 30px; margin: 0 10px; top: -50px;
+            transform: rotate(-45deg); animation: fall linear infinite; z-index: 1;
+        }
+        .heart:before, .heart:after {
+            content: ""; background-color: #ff6b6b; border-radius: 50%;
+            height: 30px; width: 30px; position: absolute;
+        }
+        .heart:before { top: -15px; left: 0; }
+        .heart:after { left: 15px; top: 0; }
+
+        @keyframes fall {
+            to { transform: translateY(105vh) rotate(-45deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="birthdaySong">
+        <source src="duu.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="card">
+        <button class="btn" id="startBtn" onclick="startCelebration()">Мэндчилгээг нээх 🎁</button>
+
+        <h1 id="title">Хөөрхөн дүүдээ төрсөн өдрийн мэнд! 🎂</h1>
+        <p id="message">Энэ дэлхийн хамгийн шилдэг дүүдээ эрүүл энх, аз жаргал, инээд хөөр бүхнийг хүсэн ерөөе. Үргэлж гэрэлтүүлж яваарай! ✨</p>
+    </div>
+
+    <script>
+        function startCelebration() {
+            // 1. Дууг тоглуулж эхлэх
+            document.getElementById("birthdaySong").play();
+            
+            // 2. Товчийг алга болгох
+            document.getElementById("startBtn").style.display = "none";
+            
+            // 3. Мэндчилгээний үгсийг гаргаж ирэх
+            document.getElementById("title").style.display = "block";
+            document.getElementById("message").style.display = "block";
+            
+            // 4. Дээрээс зүрхнүүд нисгэх
+            setInterval(createHeart, 300);
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 3 + 2 + "s";
+            heart.style.opacity = Math.random();
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 5000);
+        }
+    </script>
+</body>
+</html>
